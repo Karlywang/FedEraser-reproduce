@@ -33,12 +33,11 @@ class Arguments():
         #Federated Learning Settings
         self.N_total_client = 100
         self.N_client = 10
-        self.data_name = 'mnist'# purchase, cifar10, mnist, adult
+        self.data_name = 'adult'# purchase, cifar10, mnist, adult
         self.global_epoch = 20
         
         self.local_epoch = 10
-        
-        
+
         #Model Training Settings
         self.local_batch_size = 64
         self.local_lr = 0.005
@@ -96,7 +95,7 @@ def Federated_Unlearning():
     print(60*'=')
     print("Step3. Fedearated Learning and Unlearning Training...")
     # 
-    old_GMs, unlearn_GMs, uncali_unlearn_GMs = federated_learning_unlearning(init_global_model, 
+    old_GMs, unlearn_GMs, uncali_unlearn_GMs, _ = federated_learning_unlearning(init_global_model,
                                                                                             client_loaders, 
                                                                                             test_loader, 
                                                                                             FL_params)

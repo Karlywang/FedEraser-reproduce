@@ -22,7 +22,7 @@ from FL_base import fedavg
 from FL_base import test
 from sklearn.linear_model import LogisticRegression
 from FL_base import FL_Train, FL_Retrain
-from FL_unlearning import unlearning, unlearning_without_cali, federated_learning_unlearning
+from Fed_Unlearn_base import unlearning, unlearning_without_cali, federated_learning_unlearning
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score
