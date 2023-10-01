@@ -52,9 +52,9 @@ def FL_Train(init_global_model, client_data_loaders, test_loader, FL_params):
     for epoch in range(FL_params.global_epoch):
         client_models = global_train_once(global_model, client_data_loaders, test_loader, FL_params)
         #IMPORTANT：这里有一点要注意，就是global_train_once在训练过程中，是直接在input的client_models上进行训练，因此output的client_models与input的client_models是同一组模型，只不过input没有经过训练，而output经过了训练。
-   #IMPORTANT：因此，为了实现Federated unlearning，我们需要在global train之前就将client——models中的模型进行保存。可以使用deepcopy，或者硬盘io方式。
-    #IMPORTANT: It is IMPORTANT to note here that global_train_once is trained directly on the input client_models during training, so the output's client_models are the same set of models as the input's client_models, except that the input is untrained while the output is trained.
-    #Therefore, in order to implement Federated Unlearning, we need to save the models in Client -- Models before global Train.You can use DeepCopy, or hard disk IO.
+        #IMPORTANT：因此，为了实现Federated unlearning，我们需要在global train之前就将client——models中的模型进行保存。可以使用deepcopy，或者硬盘io方式。
+        #IMPORTANT: It is IMPORTANT to note here that global_train_once is trained directly on the input client_models during training, so the output's client_models are the same set of models as the input's client_models, except that the input is untrained while the output is trained.
+        #Therefore, in order to implement Federated Unlearning, we need to save the models in Client -- Models before global Train.You can use DeepCopy, or hard disk IO.
         all_client_models += client_models
         global_model = fedavg(client_models)
         # print(30*'^')
@@ -74,7 +74,6 @@ def FL_Retrain(init_global_model, client_data_loaders, test_loader, FL_params):
         raise ValueError('FL_params.if_retrain should be set to True, if you want to retrain FL model')
     if(FL_params.forget_client_idx not in range(FL_params.N_client)):
         raise ValueError('FL_params.forget_client_idx should be in [{}], if you want to use standard FL train with forget the certain client dataset.'.format(range(FL_params.N_client)))
-    # forget_idx= FL_params.forget_idx
     print('\n')
     print(5*"#"+"  Federated Retraining Start  "+5*"#")
     # std_time = time.time()
@@ -86,9 +85,9 @@ def FL_Retrain(init_global_model, client_data_loaders, test_loader, FL_params):
     for epoch in range(FL_params.global_epoch):
         client_models = global_train_once(global_model, client_data_loaders, test_loader, FL_params)
         #IMPORTANT：这里有一点要注意，就是global_train_once在训练过程中，是直接在input的client_models上进行训练，因此output的client_models与input的client_models是同一组模型，只不过input没有经过训练，而output经过了训练。
-        #IMPORTANT：这里有一点要注意，就是global_train_once在训练过程中，是直接在input的client_models上进行训练，因此output的client_models与input的client_models是同一组模型，只不过input没有经过训练，而output经过了训练。：It is important to note that global_train_once is trained directly on the input client_models during training, so the output's client_models are the same set of models as the input's client_models, except that the input is untrained while the output is trained.
-#   IMPORTANT：因此，为了实现Federated unlearning，我们需要在global train之前就将client——models中的模型进行保存。可以使用deepcopy，或者硬盘io方式。
-#IMPORTANT: Therefore, in order to implement Federated Unlearning, we need to save the models in Client -- Models before global Train.You can use DeepCopy, or hard disk IO.
+        #It is important to note that global_train_once is trained directly on the input client_models during training, so the output's client_models are the same set of models as the input's client_models, except that the input is untrained while the output is trained.
+        #IMPORTANT：因此，为了实现Federated unlearning，我们需要在global train之前就将client——models中的模型进行保存。可以使用deepcopy，或者硬盘io方式。
+        #IMPORTANT: Therefore, in order to implement Federated Unlearning, we need to save the models in Client -- Models before global Train.You can use DeepCopy, or hard disk IO.
         global_model = fedavg(client_models)
         # print(30*'^')
         print("Global Retraining epoch = {}".format(epoch))
@@ -131,7 +130,7 @@ def global_train_once(global_model, client_data_loaders, test_loader, FL_params)
     
     for client_idx in range(FL_params.N_client):
         if(((FL_params.if_retrain) and (FL_params.forget_client_idx == client_idx)) or ((FL_params.if_unlearning) and (FL_params.forget_client_idx == client_idx))):
-            
+            # skip the targeted (to be unlearned) client in retraining or unlearning
             continue
         # if((FL_params.if_unlearning) and (FL_params.forget_client_idx == client_idx)):
         #     continue
@@ -166,12 +165,17 @@ def global_train_once(global_model, client_data_loaders, test_loader, FL_params)
         model.to(device_cpu)
         client_models[client_idx] = model
         
-    if(((FL_params.if_retrain) and (FL_params.forget_client_idx == client_idx))):
-        #只有retrian 需要丢弃client 模型；如果不是在retrain的话，就不需要丢弃模型
-        #Only retrian needs to discard the Client model;If it's not in Retrain, there's no need to discard the model
+    if((FL_params.if_retrain) and (FL_params.forget_client_idx == client_idx)):
+        #retrain 需要丢弃client 模型 -- 并且，未训练此client模型
+        #Discard the client model for retraining
         client_models.pop(FL_params.forget_client_idx)
+        #TODO - to be tested
+        print("Discard the client model for retraining and the client_idx is:", FL_params.forget_client_idx)
+        print("client_idx:", client_idx)
         return client_models
     elif((FL_params.if_unlearning) and (FL_params.forget_client_idx in range(FL_params.N_client))):
+        #unlearn 需要丢弃client 模型 -- 并且，未训练此client模型
+        #Discard the client model for unlearning
         client_models.pop(FL_params.forget_client_idx)
         return client_models
     else:

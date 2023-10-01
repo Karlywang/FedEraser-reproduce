@@ -119,12 +119,11 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
         
     if(not(FL_params.forget_client_idx in range(FL_params.N_client))):
         raise ValueError('FL_params.forget_client_idx is note assined correctly, forget_client_idx should in {}'.format(range(FL_params.N_client)))
-    if(FL_params.unlearn_interval == 0 or FL_params.unlearn_interval >FL_params.global_epoch):
+    if(FL_params.unlearn_interval == 0 or FL_params.unlearn_interval > FL_params.global_epoch):
         raise ValueError('FL_params.unlearn_interval should not be 0, or larger than the number of FL_params.global_epoch')
     
     old_global_models = copy.deepcopy(old_GMs)
     old_client_models = copy.deepcopy(old_CMs)
-    
     
     forget_client = FL_params.forget_client_idx
     for ii in range(FL_params.global_epoch):
@@ -132,17 +131,15 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
         temp.pop(forget_client)#During Unlearn, the model saved by the forgotten user pops up
         old_client_models.append(temp)
     old_client_models = old_client_models[-FL_params.global_epoch:]
-        
-    
-    
+
     GM_intv = np.arange(0,FL_params.global_epoch+1, FL_params.unlearn_interval, dtype=np.int16())
     CM_intv  = GM_intv -1
     CM_intv = CM_intv[1:]
-    
+
     selected_GMs = [old_global_models[ii] for ii in GM_intv]
     selected_CMs = [old_client_models[jj] for jj in CM_intv]
-    
-    
+
+
     """1. First, complete the model overlay from the initial model to the first round of global train"""
     """
     Since the inIT_model does not contain any information about the forgotten user at the start of the FL training, you just need to overlay the local Model of the other retained users, You can get the Global Model after the first round of global training.
@@ -150,7 +147,8 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
     epoch = 0
     unlearn_global_models = list()
     unlearn_global_models.append(copy.deepcopy(selected_GMs[0]))
-    
+
+    #From the paper: "It should be noticed that FedEraser can directly update the global model without calibration of the remaining clients' parameters at the first reconstruction epoch."
     new_global_model = fedavg(selected_CMs[epoch])
     unlearn_global_models.append(copy.deepcopy(new_global_model))
     print("Federated Unlearning Global Epoch  = {}".format(epoch))
@@ -174,18 +172,20 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
     For unforgotten FL:oldGM_t--> oldCM0, oldCM1, oldCM2, oldCM3--> oldGM_t+1
     for unblearning FL：newGM_t-->newCM0, newCM1, newCM2, newCM3--> newGM_t+1
     oldGM_t and newGM_t essentially represents a different starting point for training. However, under the IID data, oldCM and newCM should converge in roughly the same direction.
-    Therefore, we get newCM by using newcm-newgm_t as the starting point and training fewer rounds on user data, and then using (newcm-newgm_t)/|| newcm-newgm_t || as the current forgetting setting,
-    Direction of model parameter iteration.Take || oldcm-oldgm_t || as the iteration step, and finally use || oldcm-oldgm_t ||*(newcm-newgm_t)/|| newcm-newgm_t |0 |1 for the iteration of the new model.
+    Therefore, we get newCM by using newCM-newGM_t as the starting point and training fewer rounds on user data, and then using (newCM-newGM_t)/|| newCM-newGM_t || as the current forgetting setting,
+    Direction of model parameter iteration.Take || oldCM-oldGM_t || as the iteration step, and finally use || oldCM-oldGM_t ||*(newCM-newGM_t)/|| newCM-newGM_t || for the iteration of the new model.
     FedEraser iterative formula: newGM_t+1 = newGM_t + ||oldCM - oldGM_t||*(newCM - newGM_t)/||newCM - newGM_t||
     
     """
     
 
     CONST_local_epoch = copy.deepcopy(FL_params.local_epoch)
+    #New local_epoch for unlearning with FedEraser
     FL_params.local_epoch = np.ceil(FL_params.local_epoch*FL_params.forget_local_epoch_ratio)
     FL_params.local_epoch = np.int16(FL_params.local_epoch)
 
     CONST_global_epoch = copy.deepcopy(FL_params.global_epoch)
+    #New global_epoch for unlearning with FedEraser
     FL_params.global_epoch = CM_intv.shape[0]
     
     
@@ -198,6 +198,7 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
 
         new_client_models  = global_train_once(global_model, client_data_loaders, test_loader, FL_params)
 
+        #core part of FedEraser
         new_GM = unlearning_step_once(selected_CMs[epoch], new_client_models, selected_GMs[epoch+1], global_model)
         
         unlearn_global_models.append(new_GM)
