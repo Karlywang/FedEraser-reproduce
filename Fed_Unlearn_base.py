@@ -40,8 +40,8 @@ def federated_learning_unlearning(init_global_model, client_loaders, test_loader
     std_time = time.time()
     #Set the parameter IF_unlearning =True so that global_train_once skips forgotten users and saves computing time
     FL_params.if_unlearning = True
-    #Set the parameter forget_client_IDx to mark the user's IDX that needs to be forgotten
-    FL_params.forget_client_idx = 2
+    #Set the parameter forget_client_IDx to mark the user's IDX that needs to be forgotten - Karly: no need to set this parameter here as it's already set in the main function
+    # FL_params.forget_client_idx = 2
     unlearn_GMs = unlearning(old_GMs, old_CMs, client_loaders, test_loader, FL_params)
     end_time = time.time()
     time_unlearn = (std_time - end_time)
