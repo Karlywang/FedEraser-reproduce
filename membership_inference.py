@@ -183,9 +183,9 @@ def attack(target_model, attack_model, client_loaders, test_loader, FL_params):
     unlearn_X = unlearn_X.to(device)
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(client_loaders[FL_params.forget_client_idx]):
-                    data = data.to(device)
-                    out = target_model(data)
-                    unlearn_X = torch.cat([unlearn_X, out])
+            data = data.to(device)
+            out = target_model(data)
+            unlearn_X = torch.cat([unlearn_X, out])
                     
     unlearn_X = unlearn_X[1:,:]
     unlearn_X = softmax(unlearn_X,dim = 1)
