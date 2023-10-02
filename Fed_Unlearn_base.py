@@ -76,9 +76,9 @@ def federated_learning_unlearning(init_global_model, client_loaders, test_loader
     #     print(5*"#"+"  No Retraining "+5*"#")
     #     retrain_GMs = list()
     
-    print(" Learning time consuming = {} secods".format(-time_learn))
-    print(" Unlearning time consuming = {} secods".format(-time_unlearn)) 
-    print(" Unlearning no Cali time consuming = {} secods".format(-time_unlearn_no_cali)) 
+    print(" Learning time consuming = {} secods".format(round(-time_learn,3)))
+    print(" Unlearning time consuming = {} secods".format(round(-time_unlearn,3)))
+    print(" Unlearning no Cali time consuming = {} secods".format(round(-time_unlearn_no_cali,3)))
     # print(" Retraining time consuming = {} secods".format(-time_retrain)) 
     
     

@@ -106,7 +106,7 @@ def Federated_Unlearning():
         #FedRetrain
         retrain_GMs = FL_Retrain(init_global_model, client_loaders, test_loader, FL_params)
         t2 = time.time()
-        print("Time using = {} seconds".format(t2-t1))
+        print("Time using = {} seconds".format(round(t2-t1),3))
 
     """Step 4  The member inference attack model is built based on the output of the Target Global Model on client_loaders and test_loaders.In this case, we only do the MIA attack on the model at the end of the training"""
     
