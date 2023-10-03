@@ -107,13 +107,13 @@ def data_set(data_name):
     
     #model: 2 conv. layers followed by 2 FC layers
     if(data_name == 'mnist'):
-        trainset = datasets.MNIST('./data', train=True, download=True,
+        trainset = datasets.MNIST('../data', train=True, download=True,
                    transform=transforms.Compose([
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
                    ]))
 
-        testset = datasets.MNIST('./data', train=False, download=True,
+        testset = datasets.MNIST('../data', train=False, download=True,
                    transform=transforms.Compose([
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
@@ -125,22 +125,22 @@ def data_set(data_name):
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         
-        trainset = datasets.CIFAR10(root='./data', train=True,
+        trainset = datasets.CIFAR10(root='../data', train=True,
                                                 download=True, transform=transform)
         
-        testset = datasets.CIFAR10(root='./data', train=False,
+        testset = datasets.CIFAR10(root='../data', train=False,
                                                 download=True, transform=transform)
     
     #model: 2 FC layers
     elif(data_name == 'purchase'):
         data = np.concatenate([load_npz("../data/purchase/data1.npz").toarray(), load_npz("../data/purchase/data2.npz").toarray()]).astype(int)
         num_class = 2
-        if not os.path.exists(f"{num_class}_kmeans.npy"):
+        if not os.path.exists(f"../data/purchase/{num_class}_kmeans.npy"):
             kmeans = KMeans(n_clusters=num_class, random_state=0).fit(data)
             label = kmeans.labels_
-            np.save(f"{num_class}_kmeans.npy", label)
+            np.save(f"../data/purchase/{num_class}_kmeans.npy", label)
         else:
-            label = np.load(f"{num_class}_kmeans.npy")
+            label = np.load(f"../data/purchase/{num_class}_kmeans.npy")
         # xx = np.load("./data/purchase/purchase_xx.npy")
         # yy = np.load("./data/purchase/purchase_y2.npy")
         # yy = yy.reshape(-1,1)
