@@ -4,6 +4,7 @@ Created on Thu Aug 27 09:39:07 2020
 
 @author: user
 """
+import os
 import torch
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
@@ -14,6 +15,8 @@ from sklearn.preprocessing import LabelEncoder,OneHotEncoder,MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
+from scipy.sparse import load_npz
 
 """Function: load data"""
 def data_init(FL_params):
@@ -130,13 +133,21 @@ def data_set(data_name):
     
     #model: 2 FC layers
     elif(data_name == 'purchase'):
-        xx = np.load("./data/purchase/purchase_xx.npy")
-        yy = np.load("./data/purchase/purchase_y2.npy")
+        data = np.concatenate([load_npz("../data/purchase/data1.npz").toarray(), load_npz("../data/purchase/data2.npz").toarray()]).astype(int)
+        num_class = 2
+        if not os.path.exists(f"{num_class}_kmeans.npy"):
+            kmeans = KMeans(n_clusters=num_class, random_state=0).fit(data)
+            label = kmeans.labels_
+            np.save(f"{num_class}_kmeans.npy", label)
+        else:
+            label = np.load(f"{num_class}_kmeans.npy")
+        # xx = np.load("./data/purchase/purchase_xx.npy")
+        # yy = np.load("./data/purchase/purchase_y2.npy")
         # yy = yy.reshape(-1,1)
         # enc = preprocessing.OneHotEncoder(categories='auto')
         # enc.fit(yy)
         # yy = enc.transform(yy).toarray()
-        X_train, X_test, y_train, y_test = train_test_split(xx, yy, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(data, label, test_size=0.2, random_state=42)
         
         X_train_tensor = torch.Tensor(X_train).type(torch.FloatTensor)
         X_test_tensor = torch.Tensor(X_test).type(torch.FloatTensor)
