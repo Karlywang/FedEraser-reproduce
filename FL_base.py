@@ -165,18 +165,18 @@ def global_train_once(global_model, client_data_loaders, test_loader, FL_params)
         model.to(device_cpu)
         client_models[client_idx] = model
         
-    if((FL_params.if_retrain) and (FL_params.forget_client_idx == client_idx)):
+    if((FL_params.if_retrain) and (FL_params.forget_client_idx in range(FL_params.forget_client_idx))):
         #retrain 需要丢弃client 模型 -- 并且，未训练此client模型
         #Discard the client model for retraining
         client_models.pop(FL_params.forget_client_idx)
         #TODO - to be tested
         print("Discard the client model for retraining and the client_idx is:", FL_params.forget_client_idx)
-        print("client_idx:", client_idx)
         return client_models
     elif((FL_params.if_unlearning) and (FL_params.forget_client_idx in range(FL_params.N_client))):
         #unlearn 需要丢弃client 模型 -- 并且，未训练此client模型
         #Discard the client model for unlearning
         client_models.pop(FL_params.forget_client_idx)
+        print("Discard the client model for unlearning and the client_idx is:", FL_params.forget_client_idx)
         return client_models
     else:
         return client_models
@@ -201,8 +201,8 @@ def test(model, test_loader):
         
     test_loss /= len(test_loader.dataset)
     test_acc = test_acc/np.ceil(len(test_loader.dataset)/test_loader.batch_size)
-    print('Test set: Average loss: {:.8f}'.format(test_loss))         
-    print('Test set: Average acc:  {:.4f}'.format(test_acc))    
+    # print('Test set: Average loss: {:.8f}'.format(test_loss))
+    # print('Test set: Average acc:  {:.4f}'.format(test_acc))
     return (test_loss, test_acc)
     
     
