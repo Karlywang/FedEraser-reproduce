@@ -45,6 +45,19 @@ FedEraser-Code
 ├── membership_inference.py
 └── model_initiation.py
 ```
+
+### Script Structure 
+```
+FedEraser-Code
+├── Fed_Unlearn_main.py
+│   └── Fed_Unlearn_base.py
+│       └── FL_base.py
+│   ├── model_initiation.py
+│   ├── data_preprocessing.py
+│   └── membership_inference.py
+└── 
+```
+
 There are several parts of the code:
 - datasets folder: This folder contains the training and testing data for the target model.  In order to reduce the memory space, we just list the  links to theset dataset here. 
    -- Adult: https://archive.ics.uci.edu/ml/datasets/Adult
