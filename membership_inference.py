@@ -225,11 +225,13 @@ def attack(target_model, attack_model, client_loaders, test_loader, FL_params):
     # acc = accuracy_score( YY, pred_YY)
     pre = precision_score(YY, pred_YY, pos_label=1)
     rec = recall_score(YY, pred_YY, pos_label=1)
+    f1_score = 2*pre*rec/(pre+rec)
     # print("MIA Attacker accuracy = {:.4f}".format(acc))
     print("MIA Attacker precision = {:.4f}".format(pre))
     print("MIA Attacker recall = {:.4f}".format(rec))
-    
-    return (pre, rec)
+    print("MIA Attacker F1 score = {:.4f}".format(f1_score))
+
+    return (pre, rec, f1_score)
 
 
 

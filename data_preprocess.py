@@ -161,7 +161,7 @@ def data_set(data_name):
     #model: 2 FC layers
     elif(data_name == 'adult'):
         #load data
-        file_path = "../data/adult/"
+        file_path = "./data/adult/"
         data1 = pd.read_csv(file_path + 'adult.data', header=None)
         data2 = pd.read_csv(file_path + 'adult.test', header=None, skiprows=1)
         data2 = data2.replace(' <=50K.', ' <=50K')    

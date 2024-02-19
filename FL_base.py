@@ -22,6 +22,10 @@ from data_preprocess import data_set
 
 
 def FL_Train(init_global_model, client_data_loaders, test_loader, FL_params):
+    """
+    Federated Learning (before unlearning)
+    thus, if_retrain==False, if_unlearning==False
+    """
     # if(FL_params.if_retrain == True):
     #     raise ValueError('FL_params.if_retrain should be set to False, if you want to train, not retrain FL model')
     if(FL_params.if_unlearning == True):

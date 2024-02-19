@@ -22,7 +22,7 @@ The main function is contained in Fed_Unlearn_main.py.
 **FedEraser** requires the following packages: 
 - Python 3.8.3
 - Pytorch 1.6
-- Sklearn 0.23.1
+- scikit-learn 0.23.1
 - Numpy 1.18
 - Scipy 1.5
 - torchvision

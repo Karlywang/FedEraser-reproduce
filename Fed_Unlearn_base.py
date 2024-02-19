@@ -149,6 +149,7 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
     unlearn_global_models.append(copy.deepcopy(selected_GMs[0]))
 
     #From the paper: "It should be noticed that FedEraser can directly update the global model without calibration of the remaining clients' parameters at the first reconstruction epoch."
+    #Note by Karly: I think something wrong with line153-154
     new_global_model = fedavg(selected_CMs[epoch])
     unlearn_global_models.append(copy.deepcopy(new_global_model))
     print("Federated Unlearning Global Epoch  = {}".format(epoch))
@@ -191,6 +192,7 @@ def unlearning(old_GMs, old_CMs, client_data_loaders, test_loader, FL_params):
     
     print('Local Calibration Training epoch = {}'.format(FL_params.local_epoch))
     for epoch in range(FL_params.global_epoch):
+        # From the paper: "It should be noticed that FedEraser can directly update the global model without calibration of the remaining clients' parameters at the first reconstruction epoch."
         if(epoch == 0):
             continue
         print("Federated Unlearning Global Epoch  = {}".format(epoch))

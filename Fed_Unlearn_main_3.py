@@ -32,7 +32,7 @@ class Arguments():
     def __init__(self):
         #Federated Learning Settings
         self.N_total_client = 100
-        self.N_client = 20
+        self.N_client = 15
         self.data_name = 'adult'# purchase, cifar10, mnist, adult
 
         self.global_epoch = 20
@@ -55,7 +55,7 @@ class Arguments():
         self.forget_client_idx = 2 #If want to forget, change None to the client index
         
                                 #If this parameter is set to False, only the global model after the final training is completed is output
-        self.if_retrain = False#If set to True, the global model is retrained using the FL-Retrain function, and data corresponding to the user for the forget_client_IDx number is discarded.
+        self.if_retrain = True#If set to True, the global model is retrained using the FL-Retrain function, and data corresponding to the user for the forget_client_IDx number is discarded.
         
         self.if_unlearning = False#If set to False, the global_train_once function will not skip users that need to be forgotten;If set to True, global_train_once skips the forgotten user during training
         
